@@ -309,7 +309,8 @@ def is_admin():
 
 def event_log(event_type, payload=None):
     if not st.session_state.get("email"): return
-    name = st.session_state.get("user", {}).get("name", "Devotee")
+    user = st.session_state.get("user") or {}
+    name = user.get("name", "Devotee")
     now = india_now().strftime("%d %b %Y, %I:%M %p")
     conn=db(); conn.execute("INSERT INTO temple_events(event_type,devotee_name,email,payload,created_at) VALUES(?,?,?,?,?)",(event_type,name,st.session_state.email,json.dumps(payload or {},ensure_ascii=False),now)); conn.commit(); conn.close()
     cloud_sync_event(event_type, name, payload or {}, now)
